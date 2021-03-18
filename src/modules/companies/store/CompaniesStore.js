@@ -1,4 +1,4 @@
-import CompaniesParser from '../parsers/CompaniesParser'
+import CompaniesManager from '../managers/CompaniesManager'
 
 export default {
     namespaced: true,
@@ -36,15 +36,13 @@ export default {
         },
 
         open({commit}, index) {
-            commit('OPEN', index);
+            commit('TOGGLE_COMPANY', index);
         }
     },
 
     mutations: {
         SET_LOADED(state, data) {
-            state.data = data;
-
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.load(data);
 
             state.status = 'loaded';
         },
@@ -56,98 +54,79 @@ export default {
         },
 
         CHANGE_YEARS(state, year) {
-            state.dict.disabledYears[year] = state.dict.years[year];
+            state.manager.disabledYears[year] = state.manager.years[year];
 
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.update();
         },
 
         SET_CURRENCY(state, currency) {
-            state.filter.currency = currency;
+            state.manager.filter.currency = currency;
 
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.update();
         },
 
         SET_DISPLAY_VALUE(state, value) {
-            state.filter.display = value;
+            state.manager.filter.display = value;
 
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.update();
         },
 
         SEARCH(state, name) {
-            state.filter.name = name;
+            state.manager.filter.name = name;
 
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.search();
         },
 
         SET_SORT(state, sort) {
-            if (state.filter.sort.field === sort) {
-                state.filter.sort.asc = !state.filter.sort.asc;
+            let filter = state.manager.filter;
+
+            if (filter.sort.field === sort) {
+                filter.sort.asc = !filter.sort.asc;
             } else {
-                state.filter.sort.field = sort;
-                state.filter.sort.asc = true;
+                filter.sort.field = sort;
+                filter.sort.asc = true;
             }
 
-            state.list = CompaniesParser.run(state.data, state.dict, state.filter);
+            state.manager.sort();
         },
 
-        OPEN(state, index) {
-            state.list[index].isOpen = !state.list[index].isOpen;
+        TOGGLE_COMPANY(state, index) {
+            state.manager.list[index].isOpen = !state.manager.list[index].isOpen;
         }
     },
 
     state: {
         status: null,
-        data: [],
-        list: [],
-        dict: {
-            displayValues: ['Spread', 'Yield', '3MLSpread'],
-            currencies: [],
-            years: {},
-            disabledYears: {},
-            totals: {}
-        },
-        filter: {
-            name: '',
-            sort: {
-                field: 'dateSent',
-                asc: true
-            },
-            display: 'Spread',
-            currency: 'USD',
-        }
+        manager: new CompaniesManager(),
     },
 
     getters: {
-        list(state) {
-            return state.list;
-        },
-
         status(state) {
             return state.status;
         },
 
-        currencies(state) {
-            return state.dict.currencies;
+        list(state) {
+            return state.manager.list;
         },
 
-        displayValues(state) {
-            return state.dict.displayValues;
+        currencies(state) {
+            return state.manager.currencies;
         },
 
         years(state) {
-            return state.dict.years;
+            return state.manager.years;
         },
 
         totals(state) {
-            return state.dict.totals;
+            return state.manager.totals;
         },
 
         filter(state) {
-            return state.filter;
+            return state.manager.filter;
         },
 
-        name(state) {
-            return state.filter.name;
+        minimal(state) {
+            return state.manager.minimal;
         },
     }
 }

@@ -6,6 +6,8 @@ export default class Company {
         this.name = name;
         this.dateSent = dateSent ? moment(dateSent).startOf('day') : null;
         this.isPreferred = !!isPreferred;
+        this.quotes = [];
+
         this.current = {};
         this.others = [];
         this.hasCurrent = false;

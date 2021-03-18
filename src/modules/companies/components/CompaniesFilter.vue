@@ -48,8 +48,13 @@
     import {mapGetters, mapActions} from 'vuex';
 
     export default {
+        data() {
+            return {
+                displayValues: ['Spread', 'Yield', '3MLSpread']
+            }
+        },
         computed: {
-            ...mapGetters('Companies', ['filter', 'years', 'displayValues', 'currencies']),
+            ...mapGetters('Companies', ['filter', 'years', 'currencies']),
 
             search: {
                 get() {
@@ -62,7 +67,7 @@
         },
 
         methods: {
-            ...mapActions('Companies', ['setName', 'changeYears', 'changeDisplayValue', 'changeCurrency']),
+            ...mapActions('Companies', ['changeYears', 'changeDisplayValue', 'changeCurrency']),
         }
 
     }

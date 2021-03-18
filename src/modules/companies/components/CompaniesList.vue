@@ -48,13 +48,17 @@
                         </td>
 
                         <template v-for="year in years">
-                            <td v-bind:key="item.id + '-fix-' + year" class="companies__year">
+                            <td v-bind:key="item.id + '-fix-' + year"
+                                class="companies__year"
+                                v-bind:class="{_minimal: isMinimal(item, year, 'fix')}">
                                 <div v-if="item.current[year]">
                                     {{item.current[year].fix.sum | companyValue(filter.display)}}
                                 </div>
                             </td>
 
-                            <td v-bind:key="item.id + '-frn-' + year" class="companies__year">
+                            <td v-bind:key="item.id + '-frn-' + year"
+                                class="companies__year"
+                                v-bind:class="{_minimal: isMinimal(item, year, 'frn')}">
                                 <div v-if="item.current[year]">
                                     {{item.current[year].frn.sum | companyValue(filter.display)}}
                                 </div>
@@ -118,7 +122,7 @@
 
     export default {
         computed: {
-            ...mapGetters('Companies', ['list', 'filter', 'totals']),
+            ...mapGetters('Companies', ['list', 'filter', 'totals', 'minimal']),
 
             years() {
                 const all = this.$store.getters['Companies/years'];
@@ -142,6 +146,13 @@
                     return 'companies__sort-active ' + (this.filter.sort.asc ? 'fa-caret-down' : 'fa-caret-up');
                 }
                 return 'fa-caret-down';
+            },
+
+            isMinimal(item, year, couponType) {
+                const minimal = this.minimal[year] ? this.minimal[year][couponType].sum : null;
+                const current = item.current[year] ? item.current[year][couponType].sum : null;
+
+                return minimal && minimal === current;
             }
         }
     }
@@ -182,5 +193,8 @@
     }
     .companies__year {
         text-align: center;
+    }
+    .companies__year._minimal {
+        background-color: #fffddf;
     }
 </style>
