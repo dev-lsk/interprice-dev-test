@@ -4,9 +4,9 @@ export default {
     namespaced: true,
 
     actions: {
-        async fetch({commit}) {
+        async fetch({commit, rootGetters}) {
             try {
-                let res = await fetch('/data.json');
+                let res = await fetch(rootGetters.baseUrl + 'data.json');
                 let json = await res.json();
 
                 commit('SET_LOADED', json.Items);

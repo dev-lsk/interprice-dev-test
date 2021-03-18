@@ -9,11 +9,11 @@ export default new Vuex.Store({
 
     modules: {
         Companies,
+    },
 
-        getters: {
-            baseUrl() {
-                return process.env.API_URL || '/';
-            }
+    getters: {
+        baseUrl() {
+            return process.env.API_URL || '/';
         }
     }
 });
